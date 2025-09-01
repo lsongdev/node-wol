@@ -45,18 +45,21 @@ function wake(mac, options, callback){
   ).on('error', function(err){
     socket.close();
     callback && callback(err);
-  }).once('listening', function(){
-    socket.setBroadcast(true);
   });
+
   return new Promise((resolve, reject) => {
-    socket.send(
-      magicPacket, 0, magicPacket.length,
-      port, address, function(err, res){
-        let result = res == magicPacket.length;
-        if(err) reject(err);
-        else resolve(result);
-        callback && callback(err, result);
-        socket.close();
+    socket.bind(0, function() {
+      socket.setBroadcast(true);
+
+      socket.send(
+          magicPacket, 0, magicPacket.length,
+          port, address, function(err, res){
+            let result = res == magicPacket.length;
+            if(err) reject(err);
+            else resolve(result);
+            callback && callback(err, result);
+            socket.close();
+          });
     });
   });
 };
