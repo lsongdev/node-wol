@@ -54,11 +54,14 @@ function wake(mac, options, callback){
       socket.send(
           magicPacket, 0, magicPacket.length,
           port, address, function(err, res){
-            let result = res == magicPacket.length;
-            if(err) reject(err);
-            else resolve(result);
-            callback && callback(err, result);
-            socket.close();
+            try {
+              let result = res == magicPacket.length;
+              if(err) reject(err);
+              else resolve(result);
+              callback && callback(err, result);
+            } finally {
+              socket.close();
+            }
           });
     });
   });
